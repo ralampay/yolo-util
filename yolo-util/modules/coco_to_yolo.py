@@ -1,6 +1,7 @@
 import shutil
 import json
 import os
+from pylabel import importer
 
 from ..utils import get_img, get_img_ann
 
@@ -50,6 +51,7 @@ class CocoToYolo:
                     current_category = ann['category_id'] - 1
 
                     if current_category in self.category_ids:
+                        print(f'current_category: {current_category}')
                         current_bbox = ann['bbox']
 
                         x = current_bbox[0]
@@ -58,8 +60,8 @@ class CocoToYolo:
                         h = current_bbox[3]
 
                         # Find midpoints
-                        x_center = (x + (x + w)) / 2
-                        y_center = (y + (y + h)) / 2
+                        x_center = (2*x + w) / (2*img_w)
+                        y_center = (2*y + h) / (2*img_h)
                         w = w / img_w
                         h = h / img_h
 
@@ -68,8 +70,10 @@ class CocoToYolo:
                         y_center = format(y_center, '.6f')
                         w = format(w, '.6f')
                         h = format(h, '.6f')
+                        
 
                         # write current object 
+                        print(f"{current_category} {x_center} {y_center} {w} {h}")
                         file_object.write(f"{current_category} {x_center} {y_center} {w} {h}\n")
 
                 file_object.close()
